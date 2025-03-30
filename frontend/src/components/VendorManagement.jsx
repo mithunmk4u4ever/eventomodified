@@ -3,7 +3,8 @@ import axios from "axios";
 
 const VendorManagement = () => {
   const [vendors, setVendors] = useState([]);
-  const [vendorData, setVendorData] = useState({ name: "", email: "", phone: "" });
+  const [vendorData, setVendorData] = useState({ name: "", phone: "", service: "" });
+  const [editVendor, setEditVendor] = useState(null);
 
   useEffect(() => {
     fetchVendors();
@@ -22,7 +23,7 @@ const VendorManagement = () => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:5000/api/vendors/add", vendorData);
-      setVendorData({ name: "", email: "", phone: "",service:"" });
+      setVendorData({ name: "", phone: "", service: "" });
       fetchVendors();
     } catch (error) {
       console.error("Error adding vendor", error);
@@ -39,13 +40,39 @@ const VendorManagement = () => {
     }
   };
 
+  const handleEditVendor = (vendor) => {
+    setEditVendor(vendor);
+    setVendorData({
+      name: vendor.vendor_name,
+      phone: vendor.contact_details,
+      service: vendor.vendor_service,
+    });
+  };
+
+  const handleUpdateVendor = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:5000/api/vendors/update/${editVendor._id}`, vendorData);
+      setEditVendor(null);
+      setVendorData({ name: "", phone: "", service: "" });
+      fetchVendors();
+    } catch (error) {
+      console.error("Error updating vendor", error);
+    }
+  };
+
+  const handleCancelEdit=()=>{
+    setEditVendor(null)
+    setVendorData({ name: "", phone: "", service: "" });
+  }
+
   return (
     <div className="p-6 bg-gray-100">
       <h2 className="text-2xl font-bold mb-4">Vendor Management</h2>
 
-      {/* Add Vendor Form */}
-      <form onSubmit={handleAddVendor} className="bg-white p-4 shadow rounded-lg mb-4">
-        <h3 className="text-lg font-semibold mb-2">Add Vendor</h3>
+      {/* Add or Edit Vendor Form */}
+      <form onSubmit={editVendor ? handleUpdateVendor : handleAddVendor} className="bg-white p-4 shadow rounded-lg mb-4">
+        <h3 className="text-lg font-semibold mb-2">{editVendor ? "Edit Vendor" : "Add Vendor"}</h3>
         <div className="mb-2">
           <input
             type="text"
@@ -56,16 +83,7 @@ const VendorManagement = () => {
             required
           />
         </div>
-        <div className="mb-2">
-          <input
-            type="email"
-            placeholder="Vendor Email"
-            className="w-full p-2 border rounded-lg"
-            value={vendorData.email}
-            onChange={(e) => setVendorData({ ...vendorData, email: e.target.value })}
-            required
-          />
-        </div>
+       
         <div className="mb-2">
           <input
             type="text"
@@ -86,7 +104,16 @@ const VendorManagement = () => {
             required
           />
         </div>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg">Add Vendor</button>
+        <div className="flex space-x-2">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+            {editVendor ? "Update Vendor" : "Add Vendor"}
+          </button>
+          {editVendor && (
+            <button className="px-4 py-2 bg-gray-500 text-white rounded-lg" onClick={handleCancelEdit}>
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       {/* Vendor List */}
@@ -96,7 +123,6 @@ const VendorManagement = () => {
           <thead>
             <tr className="bg-gray-200">
               <th className="p-2 text-left">Name</th>
-              <th className="p-2 text-left">Email</th>
               <th className="p-2 text-left">Phone</th>
               <th className="p-2 text-left">Service</th>
               <th className="p-2 text-center">Actions</th>
@@ -107,10 +133,14 @@ const VendorManagement = () => {
               <tr key={vendor._id} className="border-b">
                 <td className="p-2">{vendor.vendor_name}</td>
                 <td className="p-2">{vendor.contact_details}</td>
-                <td className="p-2">{vendor.contact_details}</td>
                 <td className="p-2">{vendor.vendor_service}</td>
-
-                <td className="p-2 text-center">
+                <td className="p-2 text-center flex space-x-2">
+                  <button
+                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+                    onClick={() => handleEditVendor(vendor)}
+                  >
+                    Edit
+                  </button>
                   <button
                     className="px-4 py-2 bg-red-500 text-white rounded-lg"
                     onClick={() => handleDeleteVendor(vendor._id)}

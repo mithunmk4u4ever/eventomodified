@@ -1,24 +1,23 @@
 const User = require("../models/User");
+const upload=require("../config/profileUploadConfig")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_KEY="jwtSecretKey"
 
 // ✅ Register User
-exports.registerUser = async (req, res) => {
-  try {
-    const { name, email, password, phone } = req.body;
-    let existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: "Email already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword, phone });
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully!" });
-  } catch (error) {
-    res.status(500).json({ error: "Error registering user" });
+exports.registerUser =  async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id); // Assuming user is authenticated
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      user.profilePicture = `/uploads/${req.file.filename}`; // Save file path
+      await user.save();
+  
+      res.json({ message: "Profile picture updated successfully", profilePicture: user.profilePicture });
+    } catch (error) {
+      res.status(500).json({ message: "Error uploading profile picture", error });
+    }
   }
-};
 
 // ✅ Login User
 exports.loginUser = async (req, res) => {
@@ -40,6 +39,8 @@ exports.loginUser = async (req, res) => {
 // ✅ Get User Profile
 exports.getUserProfile = async (req, res) => {
   try {
+    // console.log("userprofile",req.userId, req.role);
+    
     const user = await User.findById(req.userId).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -50,19 +51,45 @@ exports.getUserProfile = async (req, res) => {
 };
 
 // ✅ Update User Profile
-exports.updateUserProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    if (!user) return res.status(404).json({ error: "User not found" });
+// exports.updateUserProfile = async (req, res) =>upload.single("profilePicture"), async (req, res) => {
+//   try {
+//     const user = await User.findById(req.params.userId);
+//     console.log("update user",user)
+//     if (!user) return res.status(404).json({ error: "User not found" });
 
-    Object.assign(user, req.body);
-    await user.save();
+//     Object.assign(user, req.body);
+//     await user.save();
 
-    res.json({ message: "Profile updated successfully!", user });
-  } catch (error) {
-    res.status(500).json({ error: "Error updating profile" });
-  }
-};
+//     res.json({ message: "Profile updated successfully!", user });
+//   } catch (error) {
+//     res.status(500).json({ error: "Error updating profile" });
+//   }
+// };
+exports.updateUserProfile = [
+  upload.single("profilePicture"),
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.userId);
+      console.log("Update user", user);
+
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      // If a new profile picture was uploaded, update the user document
+      if (req.file) {
+        user.profilePicture = `/uploads/${req.file.filename}`;
+      }
+
+      Object.assign(user, req.body);
+      await user.save();
+
+      res.json({ message: "Profile updated successfully!", user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error updating profile" });
+    }
+  },
+];
+
 
 // ✅ Get All Users (Admin Only)
 exports.getAllUsers = async (req, res) => {

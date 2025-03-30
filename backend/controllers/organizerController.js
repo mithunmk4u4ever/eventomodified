@@ -1,16 +1,26 @@
 const Organizer=require("../models/Organizer")
+const PublicEvent=require("../models/PublicEvent")
+const bcrypt=require("bcryptjs")
+const jwt=require("jsonwebtoken")
+const JWT_SECRET_KEY="jwtSecretKey"
+
 
 const registerOrganizer =async (req, res) => {
     try {
       const { name, email, password, phone, organization_name } = req.body;
+
+      console.log("orgreg",req.body);
+      
   
       const existingOrganizer = await Organizer.findOne({ email });
       if (existingOrganizer) return res.status(400).json({ error: "Email already in use" });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
   
-      const newOrganizer = new Organizer({ name, email, password, phone, organization_name });
+      const newOrganizer = new Organizer({ name, email, password:hashedPassword, phone, organization_name });
       await newOrganizer.save();
       
-      res.status(201).json({ message: "Organizer registered successfully" });
+      res.status(201).json({ success:true,message: "Organizer registered successfully" });
     } catch (error) {
       res.status(500).json({ error: "Error registering organizer" });
     }
@@ -26,9 +36,9 @@ const registerOrganizer =async (req, res) => {
       const isMatch = await bcrypt.compare(password, organizer.password);
       if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
   
-      const token = jwt.sign({ organizerId: organizer._id }, "secret_key", { expiresIn: "7d" });
+      const token = jwt.sign({ organizerId: organizer._id }, JWT_SECRET_KEY, { expiresIn: "7d" });
   
-      res.json({ token, organizerId: organizer._id });
+      res.json({success:true, token, organizerId: organizer._id });
     } catch (error) {
       res.status(500).json({ error: "Error logging in organizer" });
     }
@@ -57,4 +67,17 @@ const registerOrganizer =async (req, res) => {
     }
   };
 
-  module.exports={registerOrganizer,loginOrganizer,getOrganizerProfile,getAllOrganizers}
+ const getOrganizerEvents = async (req, res) => {
+    try {
+      const organizerId = req.organizerId; // Extracted from token
+      console.log("getallorgevents", organizerId);
+      
+      const events = await PublicEvent.find({ organizer_id: organizerId });
+  
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  };
+
+  module.exports={registerOrganizer,loginOrganizer,getOrganizerProfile,getAllOrganizers,getOrganizerEvents}

@@ -1,4 +1,5 @@
 const express=require('express');
+const path=require('path');
 const cors=require('cors');
 const connectDB=require("./config/db")
 const userRoutes=require("./routes/userRoutes")
@@ -22,6 +23,8 @@ app.use(cors({
 app.use(express.json())
 
 connectDB()
+
+app.use("/uploads", express.static( "public/uploads"));
 
 app.use("/api/users",userRoutes)
 app.use("/api/admin",adminRoutes)

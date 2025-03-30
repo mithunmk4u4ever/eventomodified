@@ -5,6 +5,8 @@ exports.createPublicEvent = async (req, res) => {
   try {
     const { event_name, event_date, location, ticket_price } = req.body;
     const organizer_id = req.organizerId; // Extracted from token
+    console.log("reg public",req.body,organizer_id);
+    
 
     const newEvent = new PublicEvent({
       organizer_id,
@@ -16,7 +18,7 @@ exports.createPublicEvent = async (req, res) => {
     });
 
     await newEvent.save();
-    res.status(201).json({ message: "Event created, pending approval", event: newEvent });
+    res.status(201).json({ success: true, message: "Event created, pending approval", event: newEvent });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
@@ -87,3 +89,18 @@ exports.approveRejectEvent = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+// ✅ Get all pending public events
+exports.getPendingPublicEvents = async (req, res) => {
+  try {
+    const pendingEvents = await PublicEvent.find({ status: "pending" }).populate("organizer_id", "name email");
+    res.json(pendingEvents);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
+

@@ -5,6 +5,7 @@ const {
   deletePublicEvent,
   listPublicEvents,
   approveRejectEvent,
+  getPendingPublicEvents
 } = require("../controllers/publicEventController");
 
 const { authenticateOrganizer, authenticateAdmin } = require("../middlewares/authMiddlewares");
@@ -25,5 +26,8 @@ router.get("/", listPublicEvents);
 
 // ✅ Approve/Reject Public Event (Admin Only)
 router.put("/status/:eventId", authenticateAdmin, approveRejectEvent);
+
+// router.put("/approve-reject/:eventId", approveRejectPublicEvent);
+router.get("/pending", getPendingPublicEvents);
 
 module.exports = router;
