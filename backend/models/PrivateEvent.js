@@ -6,6 +6,7 @@ const PrivateEventSchema = new mongoose.Schema({
   event_date: { type: Date, required: true },
   event_location: { type: String, required: true },
   guest_count: { type: Number, required: true },
+  event_image: { type: String, required: false},
   event_status: { type: String, enum: ["Pending", "Approved", "Cancelled"], default: "Pending" },
   cost_estimate: { type: Number, required: true },
   created_at: { type: Date, default: Date.now },

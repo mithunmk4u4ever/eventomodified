@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const upload=require("../config/profileUploadConfig")
+const upload=require("../config/multerConfig")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_KEY="jwtSecretKey"
@@ -30,7 +30,7 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
     const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET_KEY, { expiresIn: "1d" });
-    res.json({ token, user: { name: user.name, email: user.email, phone: user.phone, role: user.role } });
+    res.json({ token, user: { name: user.name, email: user.email, phone: user.phone, role: "user" } });
   } catch (error) {
     res.status(500).json({ error: "Error logging in" });
   }
@@ -76,19 +76,20 @@ exports.updateUserProfile = [
 
       // If a new profile picture was uploaded, update the user document
       if (req.file) {
-        user.profilePicture = `/uploads/${req.file.filename}`;
+        user.profilePicture = `/uploads/profilepictures/${req.file.filename}`;
       }
 
       Object.assign(user, req.body);
       await user.save();
 
-      res.json({ message: "Profile updated successfully!", user });
+      res.json({ message: "Profile updated successfully!", profilePicture: user.profilePicture, user });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Error updating profile" });
     }
   },
 ];
+
 
 
 // ✅ Get All Users (Admin Only)

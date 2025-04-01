@@ -13,15 +13,21 @@ import OrganizerDashboard from "./pages/OraganizerDashboard";
 import OrganizerAuth from "./components/OrganizerAuth";
 import PublicEventForm from "./components/PublicEventForm";
 import PublicEventApproval from "./components/PublicEventApproval";
+import PaymentSuccess from "./components/PaymentSuccess";
+import CreatePrivateEvent from "./components/CreatePrivateEvent";
+import PrivateEventsDashboard from "./pages/PrivateEventDashboard";
+import LandingPage from "./pages/LandingPage";
+import UserOrders from "./pages/UserOrders";
 
 function App() {
-//  localStorage.clear()
+  //  localStorage.clear()
   return (
     <div>
       <CalendarFavicon />
       <BrowserRouter>
-      <Navbar/>
+        <Navbar />
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -29,10 +35,16 @@ function App() {
           <Route path="/user/login" element={<UserLogin />} />
           <Route path="/user/dashboard" element={<UserDashboard />} />
           <Route path="/user/profile" element={<UserProfile />} />
+          <Route path="/user/orders" element={<UserOrders />} />
           <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
           <Route path="/organizer/auth" element={<OrganizerAuth />} />
           <Route path="/publiceventform" element={<PublicEventForm />} />
           <Route path="/publiceventapproval" element={<PublicEventApproval />} />
+          <Route path="/paymentsuccess" element={<PaymentSuccess />} />
+          <Route path="/user/privateevent" element={<CreatePrivateEvent />} />
+          {/* <Route path="/privateeventdash" element={<PrivateEventsDashboard />} /> */}
+
+
 
 
 

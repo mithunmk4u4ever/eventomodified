@@ -5,12 +5,12 @@ const { authenticateUser, authenticateAdmin } = require("../middlewares/authMidd
 const router = express.Router();
 
 // ✅ Assign Vendor (Admin/User)
-router.post("/assign", authenticateUser, assignVendor);
+router.put("/assign", authenticateAdmin, assignVendor);
 
 // ✅ Update Assigned Vendor Details
-router.put("/update/:assignmentId", authenticateUser, updateVendorAssignment);
+router.put("/update/:assignmentId", authenticateAdmin, updateVendorAssignment);
 
 // ✅ Remove Vendor from an Event
-router.delete("/remove/:assignmentId", authenticateUser, removeVendorAssignment);
+router.delete("/remove/:assignmentId", authenticateAdmin, removeVendorAssignment);
 
 module.exports = router;

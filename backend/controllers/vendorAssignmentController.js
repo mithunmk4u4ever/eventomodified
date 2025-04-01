@@ -1,24 +1,28 @@
 const VendorAssignment = require("../models/VendorAssignment");
+const PrivateEvent=require("../models/PrivateEvent")
 
 // ✅ Assign Vendor to a Private Event (Admin/User)
 exports.assignVendor = async (req, res) => {
   try {
-    const { event_id, vendor_id, notes } = req.body;
+    const { event_id, vendor_id, service_type } = req.body;
 
-    // Check if the vendor is already assigned
-    const existingAssignment = await VendorAssignment.findOne({ event_id, vendor_id });
-    if (existingAssignment) return res.status(400).json({ error: "Vendor already assigned to this event" });
+    // Check if event exists
+    const event = await PrivateEvent.findById(event_id);
+    if (!event) return res.status(404).json({ error: "Event not found" });
 
-    const assignment = new VendorAssignment({
+    // Create new vendor assignment
+    const newAssignment = new VendorAssignment({
       event_id,
       vendor_id,
-      assigned_by: req.userId, // Admin/User assigning the vendor
-      notes
+      service_type,
+      assigned_by:req.adminId,
+      status: "Assigned",
     });
 
-    await assignment.save();
-    res.status(201).json({ message: "Vendor assigned successfully", assignment });
+    await newAssignment.save();
+    res.status(201).json({ message: "Vendor assigned successfully", assignment: newAssignment });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };

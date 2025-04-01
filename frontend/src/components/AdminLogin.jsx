@@ -17,8 +17,10 @@ const AdminLogin = () => {
         email,
         password,
       });
-
+      console.log(response.data);
+      
       localStorage.setItem("adminToken", response.data.token);
+      localStorage.setItem("role", response.data.role);
       navigate("/admin/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");

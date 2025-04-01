@@ -36,9 +36,9 @@ const registerOrganizer =async (req, res) => {
       const isMatch = await bcrypt.compare(password, organizer.password);
       if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
   
-      const token = jwt.sign({ organizerId: organizer._id }, JWT_SECRET_KEY, { expiresIn: "7d" });
+      const token = jwt.sign({ organizerId: organizer._id,role:"organizer" }, JWT_SECRET_KEY, { expiresIn: "7d" });
   
-      res.json({success:true, token, organizerId: organizer._id });
+      res.json({success:true, token, organizerId: organizer._id,role:"organizer" });
     } catch (error) {
       res.status(500).json({ error: "Error logging in organizer" });
     }

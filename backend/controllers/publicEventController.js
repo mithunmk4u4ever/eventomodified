@@ -4,9 +4,16 @@ const PublicEvent = require("../models/PublicEvent");
 exports.createPublicEvent = async (req, res) => {
   try {
     const { event_name, event_date, location, ticket_price } = req.body;
-    const organizer_id = req.organizerId; // Extracted from token
-    console.log("reg public",req.body,organizer_id);
+    const organizer_id = req.organizerId; // Extracted from toke
+
+    console.log("public event",req.file)
     
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image upload failed" });
+    }
+
+    const imagePath = `/uploads/publicevents/${req.file.filename}`;
 
     const newEvent = new PublicEvent({
       organizer_id,
@@ -14,15 +21,17 @@ exports.createPublicEvent = async (req, res) => {
       event_date,
       location,
       ticket_price,
-      status: "pending", // Default status
+      event_image: imagePath, // Save image path in DB
+      status: "pending",
     });
 
     await newEvent.save();
     res.status(201).json({ success: true, message: "Event created, pending approval", event: newEvent });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
+
 
 // ✅ Update Public Event (Organizer Only)
 exports.updatePublicEvent = async (req, res) => {
@@ -100,6 +109,26 @@ exports.getPendingPublicEvents = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
+// Get only approved events
+ exports.getApprovedPublicEvents = async (req, res) => {
+  try {
+    const events = await PublicEvent.find({ status: "approved" }); // Fetch approved events only
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching events", error: error.message });
+  }
+};
+
+
+
+
+
+
+
+
 
 
 

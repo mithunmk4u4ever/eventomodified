@@ -1,9 +1,10 @@
 const express = require("express");
-const { makeTicketPayment, makePrivateEventPayment, checkPaymentStatus,refundPayment } = require("../controllers/paymentController");
+const {  processPayment,makeTicketPayment, makePrivateEventPayment, checkPaymentStatus,refundPayment } = require("../controllers/paymentController");
 const { authenticateUser,authenticateAdmin } = require("../middlewares/authMiddlewares");
 
 const router = express.Router();
 
+router.post("/pay", authenticateUser, processPayment);
 // ✅ Make Payment for Ticket
 router.post("/ticket", authenticateUser, makeTicketPayment);
 

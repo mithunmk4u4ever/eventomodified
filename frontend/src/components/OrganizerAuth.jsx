@@ -25,6 +25,7 @@ const OrganizerAuth = () => {
       const response = await axios.post(url, formData);
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", response.data.role);
         navigate("/organizer/dashboard");
       }
     } catch (err) {

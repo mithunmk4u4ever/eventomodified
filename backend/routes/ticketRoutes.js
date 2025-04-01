@@ -1,11 +1,13 @@
 const express = require("express");
-const { bookTicket, cancelTicket, listUserTickets } = require("../controllers/ticketController");
+const { bookTicket, cancelTicket, listUserTickets,confirmBooking } = require("../controllers/ticketController");
 const { authenticateUser } = require("../middlewares/authMiddlewares");
 
 const router = express.Router();
 
 // ✅ Book a Ticket (User)
 router.post("/book", authenticateUser, bookTicket);
+router.post("/confirmbooking",authenticateUser,confirmBooking);
+
 
 // ✅ Cancel a Ticket (User)
 router.put("/cancel/:ticketId", authenticateUser, cancelTicket);

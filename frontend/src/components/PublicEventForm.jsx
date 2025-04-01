@@ -8,6 +8,7 @@ const PublicEventForm = () => {
     event_date: "",
     location: "",
     ticket_price: "",
+    event_image: null,
   });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -16,13 +17,28 @@ const PublicEventForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, event_image: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formDataToSend = new FormData();
+  
+    formDataToSend.append("event_name", formData.event_name);
+    formDataToSend.append("event_date", formData.event_date);
+    formDataToSend.append("location", formData.location);
+    formDataToSend.append("ticket_price", formData.ticket_price);
+    formDataToSend.append("event_image", formData.event_image);  
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("http://localhost:5000/api/publicEvents", formData, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.post("http://localhost:5000/api/publicEvents", formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
+  
       if (response.data.success) {
         navigate("/organizer/dashboard");
       }
@@ -41,6 +57,7 @@ const PublicEventForm = () => {
           <input type="date" name="event_date" value={formData.event_date} onChange={handleChange} className="w-full p-2 mb-2 border rounded" required />
           <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} className="w-full p-2 mb-2 border rounded" required />
           <input type="number" name="ticket_price" placeholder="Ticket Price" value={formData.ticket_price} onChange={handleChange} className="w-full p-2 mb-2 border rounded" required />
+          <input type="file" name="event_image" accept="image/*" onChange={handleFileChange} className="w-full p-2 mb-2 border rounded" required />
           <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Create Event</button>
         </form>
       </div>

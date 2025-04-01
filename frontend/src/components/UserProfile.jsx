@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -17,7 +18,9 @@ const UserProfile = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(data);
-      setPreview(data.profilePicture ? `http://localhost:5000${data.profilePicture}` : "");
+      
+      // Update preview path to match the multer configuration
+      setPreview(data.profilePicture ? `http://localhost:5000/public/uploads/profilepictures/${data.profilePicture}` : "");
     } catch (error) {
       console.error("Error fetching user profile", error);
     }
@@ -30,13 +33,13 @@ const UserProfile = () => {
   };
 
   const handleUpload = async (userId) => {
-    console.log("Uploading",userId);
-    
+    console.log("Uploading", userId);
+
     if (!selectedFile) return alert("Please select an image first");
 
     const formData = new FormData();
     formData.append("profilePicture", selectedFile);
-    console.log("file",selectedFile)
+    console.log("file", selectedFile);
 
     try {
       const token = localStorage.getItem("token");
@@ -49,12 +52,16 @@ const UserProfile = () => {
 
       alert("Profile picture updated!");
       setUser((prev) => ({ ...prev, profilePicture: data.profilePicture }));
-      setPreview(`http://localhost:5000${data.profilePicture}`);
+
+      // Ensure the preview matches the new multer path
+      setPreview(`http://localhost:5000/public/uploads/profilepictures/${data.profilePicture}`);
     } catch (error) {
       console.error("Error uploading file", error);
     }
   };
-console.log("user profile",user)
+
+  console.log("user profile", user);
+
   return (
     <div className="p-6 bg-gray-100">
       <h2 className="text-2xl font-bold mb-4">Profile Management</h2>
@@ -78,7 +85,7 @@ console.log("user profile",user)
 
           <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
-            onClick={()=>handleUpload(user._id)}
+            onClick={() => handleUpload(user._id)}
           >
             Upload
           </button>
@@ -86,6 +93,9 @@ console.log("user profile",user)
       ) : (
         <p>Loading user data...</p>
       )}
+      <div class = "bg-white p-4 py-6 shadow rounded-lg">
+      <Link to={"/user/orders"}>My Orders</Link>
+      </div>
     </div>
   );
 };

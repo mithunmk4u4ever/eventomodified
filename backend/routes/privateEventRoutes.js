@@ -5,6 +5,7 @@ const {
   deletePrivateEvent,
   listPrivateEvents,
   approveCancelPrivateEvent,
+  getApprovedPrivateEvents
 } = require("../controllers/privateEventController");
 
 const { authenticateUser, authenticateAdmin } = require("../middlewares/authMiddlewares");
@@ -25,5 +26,9 @@ router.get("/", authenticateUser, listPrivateEvents);
 
 // ✅ Approve/Cancel Private Event (Admin Only)
 router.put("/status/:eventId", authenticateAdmin, approveCancelPrivateEvent);
+
+router.get("/approved", authenticateUser, getApprovedPrivateEvents);
+
+// router.get("/pending", authenticateUser, getPendingPrivateEvents);
 
 module.exports = router;

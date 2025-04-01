@@ -10,7 +10,7 @@ const PublicEventListings = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/events/approved");
+        const response = await axios.get("http://localhost:5000/api/publicEvents/approved");
         setEvents(response.data);
       } catch (err) {
         setError("Failed to fetch events");
@@ -19,9 +19,31 @@ const PublicEventListings = () => {
     fetchEvents();
   }, []);
 
-  const handlePurchase = (eventId) => {
-    navigate(`/purchase-ticket/${eventId}`);
-  };
+  
+
+const handlePurchase = async (eventId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const ticket_count = prompt("Enter number of tickets:");
+
+    if (!ticket_count || isNaN(ticket_count) || ticket_count <= 0) {
+      alert("Please enter a valid number of tickets.");
+      return;
+    }
+
+    const response = await axios.post(
+      "http://localhost:5000/api/payment/pay",
+      { eventId, ticket_count: Number(ticket_count) },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    window.location.href = response.data.url; // Redirect to Stripe checkout
+  } catch (error) {
+    alert("Payment failed. Please try again.");
+  }
+};
+
+
 
   return (
     <div className="p-6">

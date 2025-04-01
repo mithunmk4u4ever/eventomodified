@@ -1,6 +1,45 @@
 const Payment = require("../models/Payment");
 const Ticket = require("../models/Ticket");
 const PrivateEvent = require("../models/PrivateEvent");
+const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKKZyPdjT7prtUloiz3csicLrjp4lacQoWpdsAG0vYNK02Nyo4U2GD00XLJHjPjg");
+const PublicEvent = require("../models/PublicEvent");
+
+exports.processPayment = async (req, res) => {
+  try {
+    const { eventId, ticket_count } = req.body;
+    const user_id = req.userId; // Extracted from auth middleware
+    // Find the event
+    const event = await PublicEvent.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    
+    const total_price = event.ticket_price * ticket_count;
+
+    // Create Stripe Checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: { name: event.event_name },
+            unit_amount: event.ticket_price * 100, // Convert to cents
+          },
+          quantity: ticket_count,
+        },
+      ],
+      mode: "payment",
+      success_url: `http://localhost:3000/paymentsuccess?session_id={CHECKOUT_SESSION_ID}&event_id=${eventId}&user_id=${user_id}&ticket_count=${ticket_count}&total_price=${total_price}`,
+      cancel_url: `http://localhost:3000/cancel`,
+    });
+
+    res.json({ url: session.url });
+  } catch (error) {
+    res.status(500).json({ message: "Payment failed", error: error.message });
+  }
+};
+
+
+
 
 // ✅ Make Payment for Ticket
 exports.makeTicketPayment = async (req, res) => {

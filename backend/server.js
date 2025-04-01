@@ -24,7 +24,7 @@ app.use(express.json())
 
 connectDB()
 
-app.use("/uploads", express.static( "public/uploads"));
+app.use("/uploads", express.static("public/uploads"));
 
 app.use("/api/users",userRoutes)
 app.use("/api/admin",adminRoutes)

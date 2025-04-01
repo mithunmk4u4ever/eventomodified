@@ -1,11 +1,13 @@
 const express = require("express");
+const upload = require("../config/multerConfig");
 const {
   createPublicEvent,
   updatePublicEvent,
   deletePublicEvent,
   listPublicEvents,
   approveRejectEvent,
-  getPendingPublicEvents
+  getPendingPublicEvents,
+  getApprovedPublicEvents
 } = require("../controllers/publicEventController");
 
 const { authenticateOrganizer, authenticateAdmin } = require("../middlewares/authMiddlewares");
@@ -13,7 +15,7 @@ const { authenticateOrganizer, authenticateAdmin } = require("../middlewares/aut
 const router = express.Router();
 
 // ✅ Create a Public Event (Organizer Only)
-router.post("/", authenticateOrganizer, createPublicEvent);
+router.post("/", authenticateOrganizer, upload.single("event_image"), createPublicEvent);
 
 // ✅ Update Public Event (Organizer Only)
 router.put("/:eventId", authenticateOrganizer, updatePublicEvent);
@@ -29,5 +31,8 @@ router.put("/status/:eventId", authenticateAdmin, approveRejectEvent);
 
 // router.put("/approve-reject/:eventId", approveRejectPublicEvent);
 router.get("/pending", getPendingPublicEvents);
+
+router.get("/approved", getApprovedPublicEvents);
+
 
 module.exports = router;

@@ -1,14 +1,16 @@
 const Ticket = require("../models/Ticket");
 const PublicEvent = require("../models/PublicEvent");
+const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKKZyPdjT7prtUloiz3csicLrjp4lacQoWpdsAG0vYNK02Nyo4U2GD00XLJHjPjg");
+
 
 // ✅ Book a Ticket for Public Event (User)
 exports.bookTicket = async (req, res) => {
   try {
-    const { event_id, ticket_count } = req.body;
+    const { eventId, ticket_count } = req.body;
     const user_id = req.userId;
 
     // Check if the event exists
-    const event = await PublicEvent.findById(event_id);
+    const event = await PublicEvent.findById(eventId);
     if (!event) return res.status(404).json({ error: "Event not found" });
 
     // Calculate total price (Assuming event has a ticket_price field)
@@ -16,7 +18,7 @@ exports.bookTicket = async (req, res) => {
 
     const newTicket = new Ticket({
       user_id,
-      event_id,
+      event_id:eventId,
       ticket_count,
       total_price,
       status: "Booked"
@@ -33,10 +35,10 @@ exports.bookTicket = async (req, res) => {
 exports.cancelTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const user_id = req.userId;
+    const userId = req.userId;
 
     const ticket = await Ticket.findOneAndUpdate(
-      { _id: ticketId, user_id, status: "Booked" },
+      { _id: ticketId, userId, status: "Booked" },
       { status: "Cancelled" },
       { new: true }
     );
@@ -60,3 +62,44 @@ exports.listUserTickets = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+exports.confirmBooking = async (req, res) => {
+  try {
+    const { session_id, event_id, user_id, ticket_count, total_price } = req.body;
+
+    // Validate required fields
+    if (!session_id || !event_id || !user_id || !ticket_count || !total_price) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Verify payment session with Stripe
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (!session || session.payment_status !== "paid") {
+      return res.status(400).json({ message: "Payment verification failed" });
+    }
+
+    // Save ticket to database
+    const newTicket = new Ticket({
+      user_id,
+      event_id,
+      ticket_count,
+      total_price,
+      booking_date: new Date(),
+      status: "Booked",
+    });
+
+    await newTicket.save();
+
+    res.status(201).json({ message: "Booking confirmed", ticket: newTicket });
+  } catch (error) {
+    console.error("Booking confirmation error:", error);
+    res.status(500).json({ message: "Booking confirmation failed", error: error.message });
+  }
+};
+
+
+
+
+
+
