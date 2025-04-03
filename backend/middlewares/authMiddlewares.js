@@ -40,6 +40,7 @@ exports.authenticateAdmin = (req, res, next) => {
     if (decoded.role !== "admin") return res.status(403).json({ error: "Unauthorized" });
 
     req.adminId = decoded.adminId;
+    req.role=decoded.role
     next();
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });

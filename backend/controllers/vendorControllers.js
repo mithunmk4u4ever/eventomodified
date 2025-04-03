@@ -1,4 +1,6 @@
+const PrivateEvent = require("../models/PrivateEvent");
 const Vendor=require("../models/Vendor")
+const PublicEvent=require("../models/PublicEvent")
 
 const createvendor=async (req, res) => {
     try {
@@ -83,5 +85,8 @@ const createvendor=async (req, res) => {
       res.status(500).json({ error: "Server error" });
     }
   };
+
+
+  
 
   module.exports={createvendor,getAllVendors,getAVendorofAPrivateEvent,updateVendor,deleteVendor}

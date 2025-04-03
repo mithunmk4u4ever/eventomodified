@@ -94,7 +94,9 @@ const UserDashboard = () => {
         ) : (
           <p className="text-center text-gray-700">Loading user data...</p>
         )}
-
+        <Link to={"/user/privateevent"} class="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white mt-5">
+          <span class="w-full">Create An Event!</span>
+        </Link>
         {/* ✅ Approved Private Events */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Approved Private Events</h2>

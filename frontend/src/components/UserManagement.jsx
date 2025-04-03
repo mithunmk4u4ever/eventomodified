@@ -11,26 +11,42 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get("http://localhost:5000/api/users");
+      const { data } = await axios.get("http://localhost:5000/api/users",{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users", error);
     }
   };
 
-  const handleBlockUnblock = async (userId, isBlocked) => {
+  const handleBlockUnblock = async (userId) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/users/${userId}/toggle-block`);
+      await axios.put(
+        `http://localhost:5000/api/users/${userId}/toggle-block`,
+        {}, // Empty body
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`, // ✅ Fixed
+          },
+        }
+      );
       fetchUsers();
     } catch (error) {
       console.error("Error updating user status", error);
     }
-  };
+};
 
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`);
+      await axios.delete(`http://localhost:5000/api/users/${userId}`,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user", error);

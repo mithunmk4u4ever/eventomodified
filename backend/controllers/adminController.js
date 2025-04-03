@@ -1,6 +1,8 @@
 const Admin = require("../models/Admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const PublicEvent=require("../models/PublicEvent")
+const PrivateEvent=require("../models/PrivateEvent")
 
 const JWT_SECRET_KEY="jwtSecretKey"
 
@@ -51,5 +53,18 @@ exports.getAdminProfile = async (req, res) => {
     res.status(200).json(admin);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getAllEventsForAdmin = async (req, res) => {
+  try {
+    const privateEvents = await PrivateEvent.find(); // Fetch all events (public & private)
+    const publicEvents=await PublicEvent.find()
+    const events=[...privateEvents,...publicEvents]
+
+    
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching events for admin" });
   }
 };

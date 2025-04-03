@@ -6,8 +6,9 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   profilePicture: { type: String, default: "" },
+  isBlocked: { type: Boolean, default: false } // Add this field
 });
 
-const User= mongoose.model("User", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
-module.exports=User
+module.exports = User;

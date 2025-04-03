@@ -18,6 +18,11 @@ import CreatePrivateEvent from "./components/CreatePrivateEvent";
 import PrivateEventsDashboard from "./pages/PrivateEventDashboard";
 import LandingPage from "./pages/LandingPage";
 import UserOrders from "./pages/UserOrders";
+import OrganizerProfile from "./components/OrganizerProfile";
+import WeatherApp from "./components/WeatherApp";
+import OrganizerCalendar from "./pages/OrganizerCalendar";
+import AdminCalendar from "./pages/AdminCalendar";
+import UserCalendar from "./pages/UserCalendar";
 
 function App() {
   //  localStorage.clear()
@@ -38,11 +43,16 @@ function App() {
           <Route path="/user/orders" element={<UserOrders />} />
           <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
           <Route path="/organizer/auth" element={<OrganizerAuth />} />
+          <Route path="/organizer/profile" element={<OrganizerProfile />} />
           <Route path="/publiceventform" element={<PublicEventForm />} />
           <Route path="/publiceventapproval" element={<PublicEventApproval />} />
           <Route path="/paymentsuccess" element={<PaymentSuccess />} />
           <Route path="/user/privateevent" element={<CreatePrivateEvent />} />
           {/* <Route path="/privateeventdash" element={<PrivateEventsDashboard />} /> */}
+          <Route path="/user/calendar" element={<UserCalendar />} />
+          <Route path="/organizer/calendar" element={<OrganizerCalendar />} />
+          <Route path="/admin/calendar" element={<AdminCalendar />} />
+
 
 
 

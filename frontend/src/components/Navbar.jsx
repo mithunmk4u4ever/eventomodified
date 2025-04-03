@@ -26,16 +26,19 @@ const Navbar = () => {
   let profileRoute = "/user/profile"; // Default to user profile
   let dashboardRoute = "/user/dashboard"; // Default to user dashboard
   let loginRoute = "/user/login";
+  let calendarRoute = "/user/calendar"
 
   if (role === "admin") {
     profileRoute = "/admin/profile";
     dashboardRoute = "/admin/dashboard";
     loginRoute = "/admin/login";
+    calendarRoute = "/admin/calendar"
   } // Redirect admin
   if (role === "organizer") {
     profileRoute = "/organizer/profile";
     dashboardRoute = "/organizer/dashboard";
     loginRoute = "/organizer/auth";
+    calendarRoute = "/organizer/calendar"
   } // Redirect organizer
 
   return (
@@ -48,11 +51,12 @@ const Navbar = () => {
           {/* Desktop Links */}
           <div className="hidden md:flex space-x-6">
             <Link to="/" className="hover:text-gray-400">Home</Link>
-            
+
             {isAuthenticated ? (
               <>
                 <Link to={dashboardRoute} className="hover:text-gray-400">Dashboard</Link>
                 <Link to={profileRoute} className="hover:text-gray-400">Profile</Link>
+                <Link to={calendarRoute} className="hover:text-gray-400">Calendar</Link>
                 <button onClick={handleLogout} className="hover:text-gray-400">Logout</button>
               </>
             ) : (
@@ -69,20 +73,20 @@ const Navbar = () => {
 
       {/* Mobile Navbar (Bottom) */}
       <div className="fixed-bottom-navbar">
-      <div className={`fixed bottom-0 left-0 w-full bg-gray-900 text-white p-3 flex justify-around md:hidden transition-all duration-300 ${isOpen ? "block" : "hidden"}`}>
-        <Link to="/" className="flex flex-col items-center"><Home size={24} /><span>Home</span></Link>
-        {isAuthenticated ? (
-          <>
-            <Link to={dashboardRoute} className="flex flex-col items-center"><LayoutDashboard size={24} /><span>Dashboard</span></Link>
-            <Link to={profileRoute} className="flex flex-col items-center"><User size={24} /><span>Profile</span></Link>
-            <button onClick={handleLogout} className="flex flex-col items-center">
-              <LogOut size={24} /><span>Logout</span>
-            </button>
-          </>
-        ) : (
-          <Link to={loginRoute} className="flex flex-col items-center"><LogIn size={24} /><span>Login</span></Link>
-        )}
-      </div>
+        <div className={`fixed bottom-0 left-0 w-full bg-gray-900 text-white p-3 flex justify-around md:hidden transition-all duration-300 ${isOpen ? "block" : "hidden"}`}>
+          <Link to="/" className="flex flex-col items-center"><Home size={24} /><span>Home</span></Link>
+          {isAuthenticated ? (
+            <>
+              <Link to={dashboardRoute} className="flex flex-col items-center"><LayoutDashboard size={24} /><span>Dashboard</span></Link>
+              <Link to={profileRoute} className="flex flex-col items-center"><User size={24} /><span>Profile</span></Link>
+              <button onClick={handleLogout} className="flex flex-col items-center">
+                <LogOut size={24} /><span>Logout</span>
+              </button>
+            </>
+          ) : (
+            <Link to={loginRoute} className="flex flex-col items-center"><LogIn size={24} /><span>Login</span></Link>
+          )}
+        </div>
       </div>
     </nav>
   );

@@ -46,7 +46,7 @@ const registerOrganizer =async (req, res) => {
 
   const getOrganizerProfile = async (req, res) => {
     try {
-      const organizer = await Organizer.findById(req.userId).select("-password");
+      const organizer = await Organizer.findById(req.organizerId).select("-password");
       if (!organizer) return res.status(404).json({ error: "Organizer not found" });
   
       res.json(organizer);
@@ -80,4 +80,23 @@ const registerOrganizer =async (req, res) => {
     }
   };
 
-  module.exports={registerOrganizer,loginOrganizer,getOrganizerProfile,getAllOrganizers,getOrganizerEvents}
+  const updateOrganizerProfile = async (req, res) => {
+    try {
+      const organizer = await Organizer.findById(req.organizerId);
+      if (!organizer) return res.status(404).json({ error: "Organizer not found" });
+  
+      // Update fields if provided
+      organizer.name = req.body.name || organizer.name;
+      organizer.email = req.body.email || organizer.email;
+      organizer.contact = req.body.contact || organizer.contact;
+  
+      await organizer.save();
+      res.json({ message: "Profile updated successfully", organizer });
+    } catch (error) {
+      res.status(500).json({ error: "Error updating profile" });
+    }
+  };
+  
+ 
+
+  module.exports={registerOrganizer,loginOrganizer,getOrganizerProfile,getAllOrganizers,getOrganizerEvents,updateOrganizerProfile}
