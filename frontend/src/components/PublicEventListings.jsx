@@ -46,7 +46,7 @@ const handlePurchase = async (eventId) => {
 
 
   return (
-    <div className="p-6">
+    <div className="p-1">
       <h2 className="text-2xl font-bold mb-4">Available Events</h2>
       {error && <p className="text-red-500">{error}</p>}
       <table className="w-full border-collapse border border-gray-300">

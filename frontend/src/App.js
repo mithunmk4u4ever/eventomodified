@@ -23,6 +23,7 @@ import WeatherApp from "./components/WeatherApp";
 import OrganizerCalendar from "./pages/OrganizerCalendar";
 import AdminCalendar from "./pages/AdminCalendar";
 import UserCalendar from "./pages/UserCalendar";
+import AdminProfile from "./components/AdminProfile";
 
 function App() {
   //  localStorage.clear()
@@ -52,6 +53,8 @@ function App() {
           <Route path="/user/calendar" element={<UserCalendar />} />
           <Route path="/organizer/calendar" element={<OrganizerCalendar />} />
           <Route path="/admin/calendar" element={<AdminCalendar />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
+
 
 
 

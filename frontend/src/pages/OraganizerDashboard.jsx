@@ -43,7 +43,7 @@ const OrganizerDashboard = () => {
       <h2 className="text-2xl font-bold mb-4">Organizer Dashboard</h2>
 
       <Link to={"/publiceventform"} class="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white">
-        <span class="w-full">Create An Event!</span>
+      <span class="w-80 inline-flex justify-center">Create An Event!</span>
        </Link>
 
       {error && <p className="text-red-500">{error}</p>}

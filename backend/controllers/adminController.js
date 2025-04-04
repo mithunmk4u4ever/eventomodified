@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const PublicEvent=require("../models/PublicEvent")
 const PrivateEvent=require("../models/PrivateEvent")
+const upload=require("../config/multerConfig")
 
 const JWT_SECRET_KEY="jwtSecretKey"
 
@@ -68,3 +69,21 @@ exports.getAllEventsForAdmin = async (req, res) => {
     res.status(500).json({ error: "Error fetching events for admin" });
   }
 };
+
+exports.updateAdminProfile=[upload.single("profilePicture"), async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    let updateData = { name, phone };
+
+    console.log("admindata",req.adminId)
+
+    if (req.file) {
+      profilePicture = `/uploads/profilepictures/${req.file.filename}`;
+    }
+
+    const admin = await Admin.findByIdAndUpdate(req.adminId, updateData, { new: true });
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating profile" });
+  }
+}];

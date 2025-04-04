@@ -77,7 +77,7 @@ const UserDashboard = () => {
         </button>
 
         {user ? (
-          <div className="max-w-lg mx-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-6 rounded-lg shadow-lg">
+          <div className="max-w-lg mx-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 mr-5 rounded-lg shadow-lg flex-1 items-center justify-center">
             <h1 className="text-2xl font-bold mb-4">{user.name}'s Profile</h1>
             <div className="flex items-center space-x-4">
               <img
@@ -95,7 +95,7 @@ const UserDashboard = () => {
           <p className="text-center text-gray-700">Loading user data...</p>
         )}
         <Link to={"/user/privateevent"} class="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white mt-5">
-          <span class="w-full">Create An Event!</span>
+          <span class="w-80 inline-flex justify-center">Create An Event!</span>
         </Link>
         {/* ✅ Approved Private Events */}
         <div className="mt-8">
