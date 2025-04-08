@@ -144,3 +144,19 @@ exports.getApprovedPrivateEvents = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+exports.getPendingPrivateEvents = async (req, res) => {
+  try {
+    const userId = req.userId; // Get user ID from authenticated request
+
+    const pendingEvents = await PrivateEvent.find({
+      user_id: userId,
+      event_status: "Pending", // Only approved events
+    });
+
+    res.json(pendingEvents);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};

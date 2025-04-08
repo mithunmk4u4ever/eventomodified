@@ -38,7 +38,7 @@ exports.cancelTicket = async (req, res) => {
     const userId = req.userId;
 
     const ticket = await Ticket.findOneAndUpdate(
-      { _id: ticketId, userId, status: "Booked" },
+      { _id: ticketId, user_id:userId, status: "Booked" },
       { status: "Cancelled" },
       { new: true }
     );
@@ -55,7 +55,7 @@ exports.cancelTicket = async (req, res) => {
 exports.listUserTickets = async (req, res) => {
   try {
     const user_id = req.userId;
-    const tickets = await Ticket.find({ user_id }).populate("event_id", "event_name event_date");
+    const tickets = await Ticket.find({ user_id }).populate("event_id", "event_name event_date location");
 
     res.json(tickets);
   } catch (error) {

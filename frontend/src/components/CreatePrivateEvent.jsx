@@ -74,6 +74,8 @@ const CreatePrivateEvent = () => {
             <option value="Wedding">Wedding</option>
             <option value="Birthday">Birthday</option>
             <option value="Anniversary">Anniversary</option>
+            <option value="Funeral">Funeral</option>
+
           </select>
         </label>
 

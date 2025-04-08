@@ -27,6 +27,7 @@ import AdminProfile from "./components/AdminProfile";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Footer from "./components/Footer";
+import TicketView from "./components/TicketView";
 
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/ticket/:id" element={<TicketView />} />
           
 
 

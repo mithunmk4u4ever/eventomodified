@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUser, FaShoppingCart, FaCog, FaBars, FaTimes } from "react-icons/fa";
 import PublicEventListings from "../components/PublicEventListings";
@@ -8,10 +8,12 @@ const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [approvedEvents, setApprovedEvents] = useState([]); // ✅ State for approved events
-  
+  const [pendingEvents, setPendingEvents] = useState([]);
+
+
   const token = localStorage.getItem("token");
 
-  const nav=useNavigate()
+  const nav = useNavigate()
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -36,8 +38,22 @@ const UserDashboard = () => {
       }
     };
 
+    const fetchPendingEvents = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get("http://localhost:5000/api/privateEvents/pending", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPendingEvents(data);
+      } catch (error) {
+        console.error("Error fetching pending events", error);
+      }
+    };
+
     fetchUser();
     fetchApprovedEvents();
+    fetchPendingEvents();
+
   }, []);
 
 
@@ -46,12 +62,12 @@ const UserDashboard = () => {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 bg-gray-900 text-white w-64 p-6 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-64"} transition-transform md:translate-x-0 md:static md:flex md:flex-col`}>
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">User Dashboard</h2>
+          {/* <h2 className="text-xl font-bold">User Dashboard</h2> */}
           <button className="md:hidden text-white" onClick={() => setSidebarOpen(false)}>
             <FaTimes size={20} />
           </button>
         </div>
-          <h3 className="mt-4 text-lg font-semibold mb-3">User Dashboard</h3>
+        <h3 className="mt-4 text-lg font-semibold mb-3">User Dashboard</h3>
         <ul className="space-y-4">
           <li>
             <Link to="/user/profile" className="flex items-center p-3 hover:bg-gray-700 rounded cursor-pointer">
@@ -81,7 +97,7 @@ const UserDashboard = () => {
 
         {user ? (
           <div className="max-w-lg mx-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 mr-5 rounded-lg shadow-lg flex-1 items-center justify-center"
-           onClick={()=>nav("/user/profile")}>
+            onClick={() => nav("/user/profile")}>
             <h1 className="text-2xl font-bold mb-4">{user.name}'s Profile</h1>
             <div className="flex items-center space-x-4">
               <img
@@ -121,9 +137,30 @@ const UserDashboard = () => {
           )}
         </div>
 
+        {/* 🕒 Pending Private Events */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Pending Private Events</h2>
+          {pendingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pendingEvents.map((event) => (
+                <div key={event._id} className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-semibold">{event.event_type}</h3>
+                  <p className="text-gray-600">{new Date(event.event_date).toLocaleDateString()}</p>
+                  <p className="text-gray-700">Location: {event.event_location}</p>
+                  <p className="text-gray-700">Guests: {event.guest_count}</p>
+                  <p className="text-yellow-600 font-bold">Status: {event.event_status}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-700">No pending private events.</p>
+          )}
+        </div>
+
+
         {/* Public Events Listing */}
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Upcoming Public Events</h2>
+          {/* <h2 className="text-2xl font-bold text-gray-900 mb-4">Upcoming Public Events</h2> */}
           {token && <PublicEventListings />}
         </div>
       </div>

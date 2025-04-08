@@ -3,6 +3,7 @@ const Ticket = require("../models/Ticket");
 const PrivateEvent = require("../models/PrivateEvent");
 const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKKZyPdjT7prtUloiz3csicLrjp4lacQoWpdsAG0vYNK02Nyo4U2GD00XLJHjPjg");
 const PublicEvent = require("../models/PublicEvent");
+const User=require("../models/User")
 
 exports.processPayment = async (req, res) => {
   try {
@@ -11,7 +12,7 @@ exports.processPayment = async (req, res) => {
     // Find the event
     const event = await PublicEvent.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
-    
+
     const total_price = event.ticket_price * ticket_count;
 
     // Create Stripe Checkout session
@@ -33,8 +34,11 @@ exports.processPayment = async (req, res) => {
     });
 
     res.json({ url: session.url });
+
+    
   } catch (error) {
     res.status(500).json({ message: "Payment failed", error: error.message });
+
   }
 };
 
@@ -110,32 +114,69 @@ exports.checkPaymentStatus = async (req, res) => {
 };
 
 exports.refundPayment = async (req, res) => {
-    try {
-      const { paymentId } = req.params;
-  
-      // Find payment record
-      const payment = await Payment.findById(paymentId);
-      if (!payment) return res.status(404).json({ error: "Payment not found" });
-  
-      // Check if the payment is already refunded
-      if (payment.payment_status === "Refunded") {
-        return res.status(400).json({ error: "Payment has already been refunded" });
-      }
-  
-      // Only completed payments can be refunded
-      if (payment.payment_status !== "Completed") {
-        return res.status(400).json({ error: "Only completed payments can be refunded" });
-      }
-  
-      // Update payment status to "Refunded"
-      payment.payment_status = "Refunded";
-      await payment.save();
-  
-      // If using a payment gateway, initiate refund request here (optional)
-      // Example: initiateRefund(payment)
-  
-      res.json({ message: "Payment refunded successfully", payment });
-    } catch (error) {
-      res.status(500).json({ error: "Server error" });
+  try {
+    const { paymentId } = req.params;
+
+    // Find payment record
+    const payment = await Payment.findById(paymentId);
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    // Check if the payment is already refunded
+    if (payment.payment_status === "Refunded") {
+      return res.status(400).json({ error: "Payment has already been refunded" });
     }
-  };
+
+    // Only completed payments can be refunded
+    if (payment.payment_status !== "Completed") {
+      return res.status(400).json({ error: "Only completed payments can be refunded" });
+    }
+
+    // Update payment status to "Refunded"
+    payment.payment_status = "Refunded";
+    await payment.save();
+
+    // If using a payment gateway, initiate refund request here (optional)
+    // Example: initiateRefund(payment)
+
+    res.json({ message: "Payment refunded successfully", payment });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// utils/sendTicketConfirmation.js
+const nodemailer = require("nodemailer");
+
+// const sendTicketConfirmation = async (userEmail, ticketDetails) => {
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail", // or use 'Outlook', 'Yahoo', or SMTP
+//       auth: {
+//         user: process.env.MAIL_USER, // your email
+//         pass: process.env.MAIL_PASS, // app password
+//       },
+//     });
+
+//     const mailOptions = {
+//       from: process.env.MAIL_USER,
+//       to: userEmail,
+//       subject: `🎟️ Ticket Confirmation - ${ticketDetails.eventName}`,
+//       html: `
+//         <h2>Your Ticket is Confirmed!</h2>
+//         <p><strong>Event:</strong> ${ticketDetails.eventName}</p>
+//         <p><strong>Date:</strong> ${new Date(ticketDetails.eventDate).toDateString()}</p>
+//         <p><strong>Location:</strong> ${ticketDetails.location}</p>
+//         <p><strong>Ticket ID:</strong> ${ticketDetails.ticketId}</p>
+//         <p>Show this email at the venue. Thank you for booking!</p>
+//       `,
+//     };
+
+//     await transporter.sendMail(mailOptions);
+//     console.log("Confirmation email sent.");
+//   } catch (error) {
+//     console.error("Error sending email:", error.message);
+//   }
+// };
+
+
+

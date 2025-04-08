@@ -16,30 +16,38 @@ const LandingPage = () => {
         fetchPublicEvents();
     }, []);
 
-    const handlePurchase = async (eventId) => {
+    const handlePurchase = async (eventId, eventDate) => {
+        const eventDateObj = new Date(eventDate);
+        const now = new Date();
+        if (eventDateObj < now) {
+            return alert("This event has already expired.");
+        }
+    
         const token = localStorage.getItem("token");
         if (!token) {
-            return alert("Please login to book the shows!")
+            return alert("Please login to book the shows!");
         }
+    
         try {
             const ticket_count = prompt("Enter number of tickets:");
-
+    
             if (!ticket_count || isNaN(ticket_count) || ticket_count <= 0) {
                 alert("Please enter a valid number of tickets.");
                 return;
             }
-
+    
             const response = await axios.post(
                 "http://localhost:5000/api/payment/pay",
                 { eventId, ticket_count: Number(ticket_count) },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
-            window.location.href = response.data.url; // Redirect to Stripe checkout
+    
+            window.location.href = response.data.url;
         } catch (error) {
             alert("Payment failed. Please try again.");
         }
     };
+    
 
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -60,7 +68,7 @@ const LandingPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {events.length > 0 ? (
                         events.map((event) => (
-                            <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handlePurchase(event._id)}>
+                            <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handlePurchase(event._id,event.event_data)}>
                                 <img
                                     src={event.event_image
                                         ? `http://localhost:5000${event.event_image}`

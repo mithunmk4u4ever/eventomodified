@@ -19,29 +19,29 @@ const PublicEventListings = () => {
     fetchEvents();
   }, []);
 
-  
 
-const handlePurchase = async (eventId) => {
-  try {
-    const token = localStorage.getItem("token");
-    const ticket_count = prompt("Enter number of tickets:");
 
-    if (!ticket_count || isNaN(ticket_count) || ticket_count <= 0) {
-      alert("Please enter a valid number of tickets.");
-      return;
+  const handlePurchase = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const ticket_count = prompt("Enter number of tickets:");
+
+      if (!ticket_count || isNaN(ticket_count) || ticket_count <= 0) {
+        alert("Please enter a valid number of tickets.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:5000/api/payment/pay",
+        { eventId, ticket_count: Number(ticket_count) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      window.location.href = response.data.url; // Redirect to Stripe checkout
+    } catch (error) {
+      alert("Payment failed. Please try again.");
     }
-
-    const response = await axios.post(
-      "http://localhost:5000/api/payment/pay",
-      { eventId, ticket_count: Number(ticket_count) },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    window.location.href = response.data.url; // Redirect to Stripe checkout
-  } catch (error) {
-    alert("Payment failed. Please try again.");
-  }
-};
+  };
 
 
 
@@ -60,18 +60,30 @@ const handlePurchase = async (eventId) => {
           </tr>
         </thead>
         <tbody>
-          {events.map((event) => (
-            <tr key={event._id} className="text-center">
-              <td className="border p-2">{event.event_name}</td>
-              <td className="border p-2">{new Date(event.event_date).toLocaleDateString()}</td>
-              <td className="border p-2">{event.location}</td>
-              <td className="border p-2">${event.ticket_price}</td>
-              <td className="border p-2">
-                <button onClick={() => handlePurchase(event._id)} className="bg-green-500 text-white px-2 py-1 rounded">Buy Ticket</button>
-              </td>
-            </tr>
-          ))}
+          {events.map((event) => {
+            const isExpired = new Date() > new Date(event.event_date);
+
+            return (
+              <tr key={event._id} className="text-center">
+                <td className="border p-2">{event.event_name}</td>
+                <td className="border p-2">{new Date(event.event_date).toLocaleDateString()}</td>
+                <td className="border p-2">{event.location}</td>
+                <td className="border p-2">${event.ticket_price}</td>
+                <td className="border p-2">
+                  <button
+                    onClick={() => handlePurchase(event._id)}
+                    className={`px-2 py-1 rounded ${isExpired ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+                      } text-white`}
+                    disabled={isExpired}
+                  >
+                    {isExpired ? "Expired" : "Buy Ticket"}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
+
       </table>
     </div>
   );
