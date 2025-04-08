@@ -43,39 +43,63 @@ const OrganizerDashboard = () => {
       <h2 className="text-2xl font-bold mb-4">Organizer Dashboard</h2>
 
       <Link to={"/publiceventform"} class="inline-flex items-center justify-center p-5 text-base font-medium text-gray-500 rounded-lg bg-gray-50 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white">
-      <span class="w-80 inline-flex justify-center">Create An Event!</span>
-       </Link>
+        <span class="w-80 inline-flex justify-center">Create An Event!</span>
+      </Link>
 
       {error && <p className="text-red-500">{error}</p>}
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">Event Name</th>
-            <th className="border p-2">Date</th>
-            <th className="border p-2">Location</th>
-            <th className="border p-2">Price</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((event) => (
-            <tr key={event._id} className="text-center">
-              <td className="border p-2">{event.event_name}</td>
-              <td className="border p-2">{new Date(event.event_date).toLocaleDateString()}</td>
-              <td className="border p-2">{event.location}</td>
-              <td className="border p-2">${event.ticket_price}</td>
-              <td className={`border p-2 ${event.status === "approved" ? "text-green-500" : event.status === "rejected" ? "text-red-500" : "text-yellow-500"}`}>
-                {event.status}
-              </td>
-              <td className="border p-2">
-                <button onClick={() => handleEdit(event._id)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Edit</button>
-                <button onClick={() => handleDelete(event._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="w-full overflow-x-auto">
+  <table className="w-full max-w-[100vw] table-fixed border-collapse border border-gray-300 text-sm">
+    <thead>
+      <tr className="bg-gray-200">
+        <th className="border p-1 break-words">Event Name</th>
+        <th className="border p-1 break-words">Date</th>
+        <th className="border p-1 break-words">Location</th>
+        <th className="border p-1 break-words">Price</th>
+        <th className="border p-1 break-words">Status</th>
+        <th className="border p-1 break-words">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {events.map((event) => (
+        <tr key={event._id} className="text-center">
+          <td className="border p-1 break-words">{event.event_name}</td>
+          <td className="border p-1 break-words">{new Date(event.event_date).toLocaleDateString()}</td>
+          <td className="border p-1 break-words">{event.location}</td>
+          <td className="border p-1 break-words">${event.ticket_price}</td>
+          <td
+            className={`border p-1 break-words ${
+              event.status === "approved"
+                ? "text-green-500"
+                : event.status === "rejected"
+                ? "text-red-500"
+                : "text-yellow-500"
+            }`}
+          >
+            {event.status}
+          </td>
+          <td className="border p-1">
+            <div className="flex flex-col md:flex-row gap-2 justify-center items-center">
+              <button
+                onClick={() => handleEdit(event._id)}
+                className="bg-blue-500 text-white px-2 py-1 rounded w-full md:w-auto"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(event._id)}
+                className="bg-red-500 text-white px-2 py-1 rounded w-full md:w-auto"
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+
     </div>
   );
 };

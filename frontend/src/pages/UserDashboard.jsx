@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUser, FaShoppingCart, FaCog, FaBars, FaTimes } from "react-icons/fa";
 import PublicEventListings from "../components/PublicEventListings";
@@ -8,11 +8,13 @@ const UserDashboard = () => {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [approvedEvents, setApprovedEvents] = useState([]); // ✅ State for approved events
+  
+  const token = localStorage.getItem("token");
 
+  const nav=useNavigate()
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
         const { data } = await axios.get("http://localhost:5000/api/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -40,7 +42,7 @@ const UserDashboard = () => {
 
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen flex flex-col bg-gray-100 pb-20">
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 bg-gray-900 text-white w-64 p-6 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-64"} transition-transform md:translate-x-0 md:static md:flex md:flex-col`}>
         <div className="flex justify-between items-center">
@@ -49,6 +51,7 @@ const UserDashboard = () => {
             <FaTimes size={20} />
           </button>
         </div>
+          <h3 className="mt-4 text-lg font-semibold mb-3">User Dashboard</h3>
         <ul className="space-y-4">
           <li>
             <Link to="/user/profile" className="flex items-center p-3 hover:bg-gray-700 rounded cursor-pointer">
@@ -61,9 +64,9 @@ const UserDashboard = () => {
             </Link>
           </li>
           <li>
-            <Link to="/user/settings" className="flex items-center p-3 hover:bg-gray-700 rounded cursor-pointer">
+            {/* <Link to="/user/settings" className="flex items-center p-3 hover:bg-gray-700 rounded cursor-pointer">
               <FaCog className="mr-3" /> Settings
-            </Link>
+            </Link> */}
           </li>
         </ul>
 
@@ -77,7 +80,8 @@ const UserDashboard = () => {
         </button>
 
         {user ? (
-          <div className="max-w-lg mx-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 mr-5 rounded-lg shadow-lg flex-1 items-center justify-center">
+          <div className="max-w-lg mx-auto bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 mr-5 rounded-lg shadow-lg flex-1 items-center justify-center"
+           onClick={()=>nav("/user/profile")}>
             <h1 className="text-2xl font-bold mb-4">{user.name}'s Profile</h1>
             <div className="flex items-center space-x-4">
               <img
@@ -120,7 +124,7 @@ const UserDashboard = () => {
         {/* Public Events Listing */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Upcoming Public Events</h2>
-          <PublicEventListings />
+          {token && <PublicEventListings />}
         </div>
       </div>
     </div>

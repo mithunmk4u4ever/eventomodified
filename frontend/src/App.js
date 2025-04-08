@@ -24,14 +24,19 @@ import OrganizerCalendar from "./pages/OrganizerCalendar";
 import AdminCalendar from "./pages/AdminCalendar";
 import UserCalendar from "./pages/UserCalendar";
 import AdminProfile from "./components/AdminProfile";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
+import Footer from "./components/Footer";
+
 
 function App() {
   //  localStorage.clear()
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <CalendarFavicon />
       <BrowserRouter>
         <Navbar />
+        <main className="flex-grow">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -54,6 +59,15 @@ function App() {
           <Route path="/organizer/calendar" element={<OrganizerCalendar />} />
           <Route path="/admin/calendar" element={<AdminCalendar />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          
+
+
+
+          
+
+
 
 
 
@@ -67,6 +81,8 @@ function App() {
 
 
         </Routes>
+        </main>
+        <Footer/>
       </BrowserRouter>
 
     </div>

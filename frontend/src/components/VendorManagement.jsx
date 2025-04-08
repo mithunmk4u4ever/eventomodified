@@ -61,7 +61,7 @@ const VendorManagement = () => {
     }
   };
 
-  const handleCancelEdit=()=>{
+  const handleCancelEdit = () => {
     setEditVendor(null)
     setVendorData({ name: "", phone: "", service: "" });
   }
@@ -83,7 +83,7 @@ const VendorManagement = () => {
             required
           />
         </div>
-       
+
         <div className="mb-2">
           <input
             type="text"
@@ -119,39 +119,44 @@ const VendorManagement = () => {
       {/* Vendor List */}
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Vendor List</h3>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="p-2 text-left">Name</th>
-              <th className="p-2 text-left">Phone</th>
-              <th className="p-2 text-left">Service</th>
-              <th className="p-2 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vendors.map((vendor) => (
-              <tr key={vendor._id} className="border-b">
-                <td className="p-2">{vendor.vendor_name}</td>
-                <td className="p-2">{vendor.contact_details}</td>
-                <td className="p-2">{vendor.vendor_service}</td>
-                <td className="p-2 text-center flex space-x-2">
-                  <button
-                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
-                    onClick={() => handleEditVendor(vendor)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                    onClick={() => handleDeleteVendor(vendor._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div className="w-full overflow-x-auto">
+          <table className="w-full max-w-[100vw] table-fixed border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2 text-left">Name</th>
+                <th className="p-2 text-left">Phone</th>
+                <th className="p-2 text-left">Service</th>
+                <th className="p-2 text-center">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {vendors.map((vendor) => (
+                <tr key={vendor._id} className="border-b">
+                  <td className="p-2 break-words">{vendor.vendor_name}</td>
+                  <td className="p-2 break-words">{vendor.contact_details}</td>
+                  <td className="p-2 break-words">{vendor.vendor_service}</td>
+                  <td className="p-2 text-center">
+                    <div className="flex flex-col md:flex-row justify-center items-center gap-2">
+                      <button
+                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg w-full md:w-auto"
+                        onClick={() => handleEditVendor(vendor)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg w-full md:w-auto"
+                        onClick={() => handleDeleteVendor(vendor._id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
       </div>
     </div>
   );
