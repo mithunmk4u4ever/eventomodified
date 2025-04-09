@@ -3,7 +3,7 @@ const PublicEvent = require("../models/PublicEvent");
 // ✅ Create Public Event (Organizer Only)
 exports.createPublicEvent = async (req, res) => {
   try {
-    const { event_name, event_date, location, ticket_price } = req.body;
+    const { event_name, event_date, location, ticket_price,capacity } = req.body;
     const organizer_id = req.organizerId; // Extracted from toke
 
     console.log("public event",req.file)
@@ -20,6 +20,7 @@ exports.createPublicEvent = async (req, res) => {
       event_name,
       event_date,
       location,
+      capacity,
       ticket_price,
       event_image: imagePath, // Save image path in DB
       status: "pending",

@@ -4,32 +4,90 @@ const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKK
 
 
 // ✅ Book a Ticket for Public Event (User)
+// exports.bookTicket = async (req, res) => {
+//   try {
+//     const { eventId, ticket_count } = req.body;
+//     const user_id = req.userId;
+
+//     console.log("user_id",req.body);
+    
+//     // Check if the event exists
+//     const event = await PublicEvent.findById(eventId);
+//     if (!event) return res.status(404).json({ error: "Event not found" });
+
+//     if (event.capacity < ticketsToBook) {
+//       return res.status(400).json({ message: "Not enough tickets available" });
+//     }
+
+//     event.capacity -= ticket_count;
+//     await event.save();
+
+//     // Calculate total price (Assuming event has a ticket_price field)
+//     const total_price = event.ticket_price * ticket_count;
+
+//     const newTicket = new Ticket({
+//       user_id,
+//       event_id:eventId,
+//       ticket_count,
+//       total_price,
+//       status: "Booked"
+//     });
+
+//     await newTicket.save();
+//     res.status(201).json({ message: "Ticket booked successfully", ticket: newTicket });
+//   } catch (error) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+
+
 exports.bookTicket = async (req, res) => {
   try {
     const { eventId, ticket_count } = req.body;
     const user_id = req.userId;
 
-    // Check if the event exists
+    const ticketsToBook = Number(ticket_count);
+
+    // Validate
+    if (!eventId || !ticketsToBook || ticketsToBook < 1) {
+      return res.status(400).json({ message: "Invalid event ID or ticket count" });
+    }
+
+    // Check if event exists
     const event = await PublicEvent.findById(eventId);
     if (!event) return res.status(404).json({ error: "Event not found" });
 
-    // Calculate total price (Assuming event has a ticket_price field)
-    const total_price = event.ticket_price * ticket_count;
+    // Check capacity
+    if (event.capacity < ticketsToBook) {
+      return res.status(400).json({ message: "Not enough tickets available" });
+    }
 
+    // Update capacity
+    event.capacity -= ticketsToBook;
+    await event.save();
+
+    // Calculate total price
+    const total_price = event.ticket_price * ticketsToBook;
+
+    // Create ticket
     const newTicket = new Ticket({
       user_id,
-      event_id:eventId,
-      ticket_count,
+      event_id: eventId,
+      ticket_count: ticketsToBook,
       total_price,
       status: "Booked"
     });
 
     await newTicket.save();
+
     res.status(201).json({ message: "Ticket booked successfully", ticket: newTicket });
   } catch (error) {
+    console.error("Booking error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // ✅ Cancel a Ticket (User)
 exports.cancelTicket = async (req, res) => {

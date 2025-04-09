@@ -8,10 +8,22 @@ const User=require("../models/User")
 exports.processPayment = async (req, res) => {
   try {
     const { eventId, ticket_count } = req.body;
+    
+    
     const user_id = req.userId; // Extracted from auth middleware
+    console.log("paymnet",req.userId)
     // Find the event
     const event = await PublicEvent.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
+    if (event.capacity < ticket_count) {
+      return res.status(400).json({ message: "Not enough tickets available" });
+    }
+
+    // Update capacity
+    event.capacity -= ticket_count;
+    await event.save();
+
 
     const total_price = event.ticket_price * ticket_count;
 

@@ -8,6 +8,7 @@ const publicEventSchema = new mongoose.Schema({
   ticket_price: { type: Number, required: true },
   event_image: { type: String }, 
   status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+  capacity: { type: Number, required: true }, // ✅ added
 });
 
 const PublicEvent = mongoose.model("PublicEvent", publicEventSchema);
