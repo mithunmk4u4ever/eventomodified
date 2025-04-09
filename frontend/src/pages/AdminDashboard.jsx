@@ -3,7 +3,11 @@ import UserManagement from "../components/UserManagement";
 import VendorManagement from "../components/VendorManagement";
 import PrivateEventsApproval from "../components/PrivateEventsApproval";
 import PublicEventApproval from "../components/PublicEventApproval";
+import AdminReports from "../components/AdminReports";
 import { FaBars, FaTimes, FaUser, FaStore, FaCalendarCheck, FaCalendar } from "react-icons/fa";
+import { TbReportSearch } from "react-icons/tb";
+import { SiAwsorganizations } from "react-icons/si";
+import OrganizerManagement from "../components/OrganizerManagement";
 
 const AdminDashboard = () => {
   const [section, setSection] = useState("users");
@@ -27,8 +31,12 @@ const AdminDashboard = () => {
           </button>
         </div>
         <ul className="mt-6 space-y-4">
-          <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center" onClick={() => setSection("users")}>
+          <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center mt-5" onClick={() => setSection("users")}>
             <FaUser className="mr-3" /> User Management
+          </li>
+
+          <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center mt-5" onClick={() => setSection("organizers")}>
+            <SiAwsorganizations className="mr-3" /> Organizer Management
           </li>
           <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center" onClick={() => setSection("vendors")}>
             <FaStore className="mr-3" /> Vendor Management
@@ -38,6 +46,10 @@ const AdminDashboard = () => {
           </li>
           <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center" onClick={() => setSection("publicEvents")}>
             <FaCalendar className="mr-3" /> Public Events
+          </li>
+
+          <li className="cursor-pointer p-3 hover:bg-gray-700 rounded flex items-center" onClick={() => setSection("reports")}>
+            <TbReportSearch  className="mr-3" /> Report
           </li>
         </ul>
       </div>
@@ -54,6 +66,9 @@ const AdminDashboard = () => {
         {section === "vendors" && <VendorManagement />}
         {section === "privateEvents" && <PrivateEventsApproval />}
         {section === "publicEvents" && <PublicEventApproval />}
+        {section === "reports" && <AdminReports />}
+        {section === "organizers" && <OrganizerManagement />}
+
       </div>
     </div>
   );

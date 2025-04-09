@@ -21,8 +21,18 @@ const OrganizerAuth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = isLogin ? "http://localhost:5000/api/organizers/login" : "http://localhost:5000/api/organizers/register";
+      const url = isLogin
+        ? "http://localhost:5000/api/organizers/login"
+        : "http://localhost:5000/api/organizers/register";
+  
       const response = await axios.post(url, formData);
+  
+      // Check for blocked organizer (only on login)
+      if (isLogin && response.data.blocked) {
+        alert("You have been blocked by the admin.");
+        return;
+      }
+  
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.role);
@@ -32,6 +42,7 @@ const OrganizerAuth = () => {
       setError(err.response?.data?.message || "Authentication failed");
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">

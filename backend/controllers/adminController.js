@@ -87,3 +87,66 @@ exports.updateAdminProfile=[upload.single("profilePicture"), async (req, res) =>
     res.status(500).json({ error: "Error updating profile" });
   }
 }];
+
+exports.consolidatedReport= async (req, res) => {
+  try {
+    // Fetch both types of events
+    const privateEvents = await PrivateEvent.find()
+      .populate("user_id", "name email")
+      .populate("vendor_ids", "vendor_name");
+
+    const publicEvents = await PublicEvent.find()
+      .populate("organizer_id", "name")
+     
+
+    const allEvents = [...privateEvents, ...publicEvents];
+
+    const totalEvents = allEvents.length;
+    const approvedEvents = allEvents.filter(e => e.event_status === "Approved").length;
+    const pendingEvents = allEvents.filter(e => e.event_status === "Pending").length;
+    const rejectedEvents = allEvents.filter(e => e.event_status === "Rejected").length;
+
+    // User-wise event count
+    const userWiseStats = {};
+    allEvents.forEach(event => {
+      const userId = event.user_id?._id;
+      const userName = event.user_id?.name || "Unknown";
+      if (userId) {
+        userWiseStats[userId] = userWiseStats[userId] || { name: userName, count: 0 };
+        userWiseStats[userId].count += 1;
+      }
+    });
+
+    // Vendor usage count
+    const vendorUsage = {};
+    allEvents.forEach(event => {
+      event.vendor_ids?.forEach(vendor => {
+        const vendorId = vendor._id;
+        const vendorName = vendor.vendor_name || "Unknown";
+        vendorUsage[vendorId] = vendorUsage[vendorId] || { name: vendorName, count: 0 };
+        vendorUsage[vendorId].count += 1;
+      });
+    });
+
+    // Upcoming events (date >= today)
+    const today = new Date();
+    const upcomingEvents = allEvents.filter(e => new Date(e.event_date) >= today);
+
+    res.json({
+      totalEvents,
+      approvedEvents,
+      pendingEvents,
+      rejectedEvents,
+      userWiseStats: Object.values(userWiseStats),
+      vendorUsage: Object.values(vendorUsage),
+      upcomingEvents,
+    });
+
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res.status(500).json({ message: "Server error while generating report" });
+  }
+}
+
+
+

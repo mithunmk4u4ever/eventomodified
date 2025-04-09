@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerAdmin, loginAdmin, getAdminProfile,getAllEventsForAdmin, updateAdminProfile } = require("../controllers/adminController");
+const { registerAdmin, loginAdmin, getAdminProfile,getAllEventsForAdmin, updateAdminProfile, consolidatedReport } = require("../controllers/adminController");
 const { authenticateAdmin } = require("../middlewares/authMiddlewares");
 
 const router = express.Router();
@@ -14,6 +14,8 @@ router.post("/login", loginAdmin);
 router.get("/profile", authenticateAdmin, getAdminProfile);
 router.get("/allevents", authenticateAdmin, getAllEventsForAdmin);  // Admin Calendar API
 router.put("/profile",authenticateAdmin,updateAdminProfile)
+router.get("/report",consolidatedReport)
+
 
 
 module.exports = router;

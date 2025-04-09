@@ -1,5 +1,5 @@
 const PrivateEvent = require("../models/PrivateEvent");
-const upload=require("../config/multerConfig")
+const upload = require("../config/multerConfig")
 
 // ✅ Create Private Event (User Only)
 exports.createPrivateEvent = [
@@ -8,8 +8,8 @@ exports.createPrivateEvent = [
     try {
       const { event_type, event_date, event_location, guest_count, cost_estimate } = req.body;
       const user_id = req.userId; // Extracted from token
-      console.log("private",req.userId);
-      
+      console.log("private", req.userId);
+
       const eventImage = req.file ? `/uploads/privateevents/${req.file.filename}` : null;
 
       const newEvent = new PrivateEvent({
@@ -110,53 +110,78 @@ exports.listPrivateEvents = async (req, res) => {
 
 
 // ✅ Approve/Cancel Private Event (Admin Only)
-exports.approveCancelPrivateEvent = async (req, res) => {
-  try {
-    const { eventId } = req.params;
-    const event_status = req.body.status; // 'Approved' or 'Cancelled'
+// exports.approveCancelPrivateEvent = async (req, res) => {
+//   try {
+//     const { eventId } = req.params;
+//     const event_status = req.body.status; // 'Approved' or 'Cancelled'
 
-    if (!["Approved", "Cancelled"].includes(event_status)) {
-      return res.status(400).json({ error: "Invalid status value" });
+//     if (!["Approved", "Cancelled"].includes(event_status)) {
+//       return res.status(400).json({ error: "Invalid status value" });
+//     }
+
+//     const updatedEvent = await PrivateEvent.findByIdAndUpdate(eventId, { event_status }, { new: true });
+
+//     if (!updatedEvent) return res.status(404).json({ error: "Event not found" });
+
+//     res.json({ message: `Private event ${event_status} successfully`, event: updatedEvent });
+//   } catch (error) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+exports.approveCancelPrivateEvent = async (req, res) => {
+  const { status, suggested_cost } = req.body;
+
+  try {
+    const updateFields = { event_status: status };
+    if (suggested_cost !== undefined) {
+      updateFields.suggested_cost = suggested_cost;
     }
 
-    const updatedEvent = await PrivateEvent.findByIdAndUpdate(eventId, { event_status }, { new: true });
-
-    if (!updatedEvent) return res.status(404).json({ error: "Event not found" });
-
-    res.json({ message: `Private event ${event_status} successfully`, event: updatedEvent });
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    await PrivateEvent.findByIdAndUpdate(req.params.id, updateFields);
+    res.json({ success: true, message: "Event status updated" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update event status" });
   }
 };
 
+
+
 exports.getApprovedPrivateEvents = async (req, res) => {
   try {
-    const userId = req.userId; // Get user ID from authenticated request
-
+    const userId = req.userId;
+  
     const approvedEvents = await PrivateEvent.find({
+      event_status: "Approved",
       user_id: userId,
-      event_status: "Approved", // Only approved events
-    });
-
+    })
+    .populate("vendor_ids", "vendor_name")
+    .exec();
+    console.log("approvedEvents",approvedEvents);
+    
     res.json(approvedEvents);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
-};
 
+}
 exports.getPendingPrivateEvents = async (req, res) => {
   try {
-    const userId = req.userId; // Get user ID from authenticated request
-
+    const userId = req.userId;
+  
     const pendingEvents = await PrivateEvent.find({
+      event_status: "Pending",
       user_id: userId,
-      event_status: "Pending", // Only approved events
-    });
-
+    })
+    .populate("vendor_ids", "vendor_name")
+    .exec();
+  
     res.json(pendingEvents);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+

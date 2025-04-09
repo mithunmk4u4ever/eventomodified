@@ -142,15 +142,19 @@ const UserDashboard = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Pending Private Events</h2>
           {pendingEvents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {pendingEvents.map((event) => (
+              {approvedEvents.map((event) => (
                 <div key={event._id} className="bg-white p-4 rounded-lg shadow-md">
                   <h3 className="text-xl font-semibold">{event.event_type}</h3>
                   <p className="text-gray-600">{new Date(event.event_date).toLocaleDateString()}</p>
                   <p className="text-gray-700">Location: {event.event_location}</p>
                   <p className="text-gray-700">Guests: {event.guest_count}</p>
-                  <p className="text-yellow-600 font-bold">Status: {event.event_status}</p>
+                  <p className="text-sm text-gray-500">
+                    Vendors: {event.vendor_ids?.map(v => v.vendor_name).join(", ")}
+                  </p>
+                  <p className="text-green-600 font-bold">Status: {event.event_status}</p>
                 </div>
               ))}
+
             </div>
           ) : (
             <p className="text-gray-700">No pending private events.</p>

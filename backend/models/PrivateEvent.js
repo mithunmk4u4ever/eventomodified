@@ -9,6 +9,10 @@ const PrivateEventSchema = new mongoose.Schema({
   event_image: { type: String, required: false},
   event_status: { type: String, enum: ["Pending", "Approved", "Cancelled"], default: "Pending" },
   cost_estimate: { type: Number, required: true },
+  suggested_cost: { type: Number },
+  vendor_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Vendor" }],
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
   created_at: { type: Date, default: Date.now },
 });
 

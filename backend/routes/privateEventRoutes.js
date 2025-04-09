@@ -26,7 +26,7 @@ router.delete("/:eventId", authenticateUser, deletePrivateEvent);
 router.get("/", authenticateUser, listPrivateEvents);
 
 // ✅ Approve/Cancel Private Event (Admin Only)
-router.put("/status/:eventId", authenticateAdmin, approveCancelPrivateEvent);
+router.put("/status/:id", authenticateAdmin, approveCancelPrivateEvent);
 
 router.get("/approved", authenticateUser, getApprovedPrivateEvents);
 

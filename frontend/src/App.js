@@ -28,6 +28,8 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Footer from "./components/Footer";
 import TicketView from "./components/TicketView";
+import AdminReports from "./components/AdminReports";
+import OrganizerManagement from "./components/OrganizerManagement";
 
 
 function App() {
@@ -60,9 +62,12 @@ function App() {
           <Route path="/organizer/calendar" element={<OrganizerCalendar />} />
           <Route path="/admin/calendar" element={<AdminCalendar />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/ticket/:id" element={<TicketView />} />
+          <Route path="/organizermgmt" element={<OrganizerManagement />} />
+
           
 
 
@@ -84,7 +89,7 @@ function App() {
 
         </Routes>
         </main>
-        <Footer/>
+        {/* <Footer/> */}
       </BrowserRouter>
 
     </div>

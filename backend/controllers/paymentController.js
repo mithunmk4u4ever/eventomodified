@@ -145,7 +145,7 @@ exports.refundPayment = async (req, res) => {
 };
 
 // utils/sendTicketConfirmation.js
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 
 // const sendTicketConfirmation = async (userEmail, ticketDetails) => {
 //   try {

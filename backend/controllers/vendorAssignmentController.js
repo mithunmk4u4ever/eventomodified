@@ -2,30 +2,39 @@ const VendorAssignment = require("../models/VendorAssignment");
 const PrivateEvent=require("../models/PrivateEvent")
 
 // ✅ Assign Vendor to a Private Event (Admin/User)
-exports.assignVendor = async (req, res) => {
+// PUT /api/privateEvents/assign-vendors
+exports.assignVendors=async (req, res) => {
   try {
-    const { event_id, vendor_id, service_type } = req.body;
+    const { event_id, vendor_ids } = req.body;
 
-    // Check if event exists
+    if (!Array.isArray(vendor_ids)) {
+      return res.status(400).json({ message: "vendor_ids must be an array" });
+    }
+
     const event = await PrivateEvent.findById(event_id);
-    if (!event) return res.status(404).json({ error: "Event not found" });
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
 
-    // Create new vendor assignment
-    const newAssignment = new VendorAssignment({
-      event_id,
-      vendor_id,
-      service_type,
-      assigned_by:req.adminId,
-      status: "Assigned",
-    });
+    // Merge vendor_ids into existing ones without duplicates
+    const uniqueVendorIds = Array.from(new Set([
+      ...(event.vendor_ids || []).map(id => id.toString()),
+      ...vendor_ids
+    ]));
 
-    await newAssignment.save();
-    res.status(201).json({ message: "Vendor assigned successfully", assignment: newAssignment });
+    event.vendor_ids = uniqueVendorIds;
+
+    await event.save();
+
+    return res.status(200).json({ message: "Vendors assigned successfully", event });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error assigning vendors:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
+
+
 
 // ✅ Update Assigned Vendor Details
 exports.updateVendorAssignment = async (req, res) => {

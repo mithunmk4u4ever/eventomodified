@@ -8,6 +8,9 @@ router.get("/profile", authenticateOrganizer, organizerController.getOrganizerPr
 router.get("/", authenticateAdmin, organizerController.getAllOrganizers); // All Organizers (Admin Only)
 router.get("/events", authenticateOrganizer,organizerController.getOrganizerEvents);
 router.put("/update-profile", authenticateOrganizer, organizerController.updateOrganizerProfile); 
+router.delete("/:id", authenticateAdmin, organizerController.deleteOrganizer); 
+router.put("/:id/toggle-block", authenticateAdmin, organizerController.handleBlockUnblockOrganizer); // http://localhost:5000/api/organizers/{organizerId}/toggle-block
+
 
 
 module.exports=router
