@@ -53,6 +53,7 @@ const UserOrders = () => {
       );
   
       alert("Your ticket has been cancelled. The amount will be transferred to your account after deducting cancellation charges.");
+      window.location.reload()
     } catch (error) {
       console.error("Error cancelling ticket", error);
     }

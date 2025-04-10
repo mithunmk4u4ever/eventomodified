@@ -42,72 +42,88 @@ const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKK
 
 
 
-exports.bookTicket = async (req, res) => {
-  try {
-    const { eventId, ticket_count } = req.body;
-    const user_id = req.userId;
+// exports.bookTicket = async (req, res) => {
+//   try {
+//     const { eventId, ticket_count } = req.body;
+//     const user_id = req.userId;
 
-    const ticketsToBook = Number(ticket_count);
+//     const ticketsToBook = Number(ticket_count);
 
-    // Validate
-    if (!eventId || !ticketsToBook || ticketsToBook < 1) {
-      return res.status(400).json({ message: "Invalid event ID or ticket count" });
-    }
+//     // Validate
+//     if (!eventId || !ticketsToBook || ticketsToBook < 1) {
+//       return res.status(400).json({ message: "Invalid event ID or ticket count" });
+//     }
 
-    // Check if event exists
-    const event = await PublicEvent.findById(eventId);
-    if (!event) return res.status(404).json({ error: "Event not found" });
+//     // Check if event exists
+//     const event = await PublicEvent.findById(eventId);
+//     if (!event) return res.status(404).json({ error: "Event not found" });
 
-    // Check capacity
-    if (event.capacity < ticketsToBook) {
-      return res.status(400).json({ message: "Not enough tickets available" });
-    }
+//     // Check capacity
+//     if (event.capacity < ticketsToBook) {
+//       return res.status(400).json({ message: "Not enough tickets available" });
+//     }
 
-    // Update capacity
-    event.capacity -= ticketsToBook;
-    await event.save();
+//     // Update capacity
+//     event.capacity -= ticketsToBook;
+//     await event.save();
 
-    // Calculate total price
-    const total_price = event.ticket_price * ticketsToBook;
+//     // Calculate total price
+//     const total_price = event.ticket_price * ticketsToBook;
 
-    // Create ticket
-    const newTicket = new Ticket({
-      user_id,
-      event_id: eventId,
-      ticket_count: ticketsToBook,
-      total_price,
-      status: "Booked"
-    });
+//     // Create ticket
+//     const newTicket = new Ticket({
+//       user_id,
+//       event_id: eventId,
+//       ticket_count: ticketsToBook,
+//       total_price,
+//       status: "Booked"
+//     });
 
-    await newTicket.save();
+//     await newTicket.save();
 
-    res.status(201).json({ message: "Ticket booked successfully", ticket: newTicket });
-  } catch (error) {
-    console.error("Booking error:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-};
+//     res.status(201).json({ message: "Ticket booked successfully", ticket: newTicket });
+//   } catch (error) {
+//     console.error("Booking error:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
 
 
 // ✅ Cancel a Ticket (User)
+const Ticket = require("../models/Ticket");
+const PublicEvent = require("../models/PublicEvent");
+
 exports.cancelTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const userId = req.userId;
 
+    // Find and cancel the ticket
     const ticket = await Ticket.findOneAndUpdate(
-      { _id: ticketId, user_id:userId, status: "Booked" },
+      { _id: ticketId, user_id: userId, status: "Booked" },
       { status: "Cancelled" },
       { new: true }
     );
 
-    if (!ticket) return res.status(404).json({ error: "Ticket not found or already cancelled" });
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found or already cancelled" });
+    }
+
+    // The number of tickets being cancelled
+    const cancelledSeats = ticket.ticket_count;
+
+    // Update the event's capacity by adding the cancelled seats
+    await PublicEvent.findByIdAndUpdate(ticket.event_id, {
+      $inc: { capacity: cancelledSeats },
+    });
 
     res.json({ message: "Ticket cancelled successfully", ticket });
   } catch (error) {
+    console.error("Ticket cancellation error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // ✅ List Tickets of a User
 exports.listUserTickets = async (req, res) => {
