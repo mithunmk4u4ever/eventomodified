@@ -90,9 +90,6 @@ const stripe = require("stripe")("sk_test_51R7CjtQLNT1d5eqJqHI5g9sCuM68XV0i4VXKK
 
 
 // ✅ Cancel a Ticket (User)
-const Ticket = require("../models/Ticket");
-const PublicEvent = require("../models/PublicEvent");
-
 exports.cancelTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
@@ -152,6 +149,21 @@ exports.confirmBooking = async (req, res) => {
     if (!session || session.payment_status !== "paid") {
       return res.status(400).json({ message: "Payment verification failed" });
     }
+
+    // Update event capacity
+    const event = await PublicEvent.findById(event_id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if enough capacity is available
+    if (event.capacity < ticket_count) {
+      return res.status(400).json({ message: "Not enough tickets available" });
+    }
+
+    // Update capacity
+    event.capacity -= ticket_count;
+    await event.save();
 
     // Save ticket to database
     const newTicket = new Ticket({

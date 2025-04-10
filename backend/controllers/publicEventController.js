@@ -1,4 +1,6 @@
 const PublicEvent = require("../models/PublicEvent");
+const Ticket = require("../models/Ticket");
+const stripe = require("stripe")("sk_test_51QzE23R3z1zyApxODJWj2Tpkf0BsWNahMNji0W3AXc6P3xXSdw9VYDdB8imYHP0KUhFapntZ7sODgKHAHx2BIVcB00uFqqTOJ3");
 
 // ✅ Create Public Event (Organizer Only)
 exports.createPublicEvent = async (req, res) => {
@@ -40,9 +42,16 @@ exports.updatePublicEvent = async (req, res) => {
     const { id } = req.params;
     const organizer_id = req.organizerId;
 
+    let updateData = { ...req.body };
+
+    // Handle image update if a new image is uploaded
+    if (req.file) {
+      updateData.event_image = `/uploads/publicevents/${req.file.filename}`;
+    }
+
     const updatedEvent = await PublicEvent.findOneAndUpdate(
       { _id: id, organizer_id },
-      req.body,
+      updateData,
       { new: true }
     );
 
