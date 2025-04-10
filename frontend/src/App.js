@@ -30,6 +30,7 @@ import Footer from "./components/Footer";
 import TicketView from "./components/TicketView";
 import AdminReports from "./components/AdminReports";
 import OrganizerManagement from "./components/OrganizerManagement";
+import EditAPublicEvent from "./components/EditAPublicEvent";
 
 
 function App() {
@@ -67,6 +68,8 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/ticket/:id" element={<TicketView />} />
           <Route path="/organizermgmt" element={<OrganizerManagement />} />
+          <Route path="/editpublicevent/:id" element={<EditAPublicEvent />} />
+
 
           
 

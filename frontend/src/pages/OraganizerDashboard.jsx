@@ -23,13 +23,13 @@ const OrganizerDashboard = () => {
   }, []);
 
   const handleEdit = (eventId) => {
-    navigate(`/edit-event/${eventId}`);
+    navigate(`/editpublicevent/${eventId}`);
   };
 
   const handleDelete = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/organizers/events`, {
+      await axios.delete(`http://localhost:5000/api/publicEvents/${eventId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEvents(events.filter((event) => event._id !== eventId));

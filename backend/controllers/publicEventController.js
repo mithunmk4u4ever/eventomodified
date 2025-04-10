@@ -37,11 +37,11 @@ exports.createPublicEvent = async (req, res) => {
 // ✅ Update Public Event (Organizer Only)
 exports.updatePublicEvent = async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const { id } = req.params;
     const organizer_id = req.organizerId;
 
     const updatedEvent = await PublicEvent.findOneAndUpdate(
-      { _id: eventId, organizer_id },
+      { _id: id, organizer_id },
       req.body,
       { new: true }
     );
@@ -122,6 +122,37 @@ exports.getPendingPublicEvents = async (req, res) => {
     res.status(500).json({ message: "Error fetching events", error: error.message });
   }
 };
+
+
+exports.getAPublicEvent=async (req, res) => {
+  try {
+    const event = await PublicEvent.findById(req.params.id);
+    if (!event) return res.status(404).json({ error: "Event not found" });
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch event" });
+  }
+}
+
+exports.updateAPublicEvent=async (req, res) => {
+  try {
+    const updatedEvent = await PublicEvent.findByIdAndUpdate(
+      req.params.id,
+      {
+        event_name: req.body.event_name,
+        event_date: req.body.event_date,
+        location: req.body.location,
+        ticket_price: req.body.ticket_price,
+        capacity: req.body.capacity,
+        event_image: req.body.event_image,
+      },
+      { new: true }
+    );
+    res.json(updatedEvent);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update event" });
+  }
+}
 
 
 

@@ -7,7 +7,8 @@ const {
   listPublicEvents,
   approveRejectEvent,
   getPendingPublicEvents,
-  getApprovedPublicEvents
+  getApprovedPublicEvents,
+  getAPublicEvent
 } = require("../controllers/publicEventController");
 
 const { authenticateOrganizer, authenticateAdmin } = require("../middlewares/authMiddlewares");
@@ -18,7 +19,7 @@ const router = express.Router();
 router.post("/", authenticateOrganizer, upload.single("event_image"), createPublicEvent);
 
 // ✅ Update Public Event (Organizer Only)
-router.put("/:eventId", authenticateOrganizer, updatePublicEvent);
+// router.put("/:eventId", authenticateOrganizer, updatePublicEvent);
 
 // ✅ Delete Public Event (Organizer Only)
 router.delete("/:eventId", authenticateOrganizer, deletePublicEvent);
@@ -33,6 +34,9 @@ router.put("/status/:eventId", authenticateAdmin, approveRejectEvent);
 router.get("/pending", getPendingPublicEvents);
 
 router.get("/approved", getApprovedPublicEvents);
+router.get("/:id",authenticateOrganizer, getAPublicEvent);
+router.put("/:id",authenticateOrganizer,upload.single("event_image"), updatePublicEvent);
+
 
 
 module.exports = router;
